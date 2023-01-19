@@ -3,6 +3,7 @@ import os
 import numpy as np
 import acquire
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
 from env import username, password, host 
 
 
@@ -76,7 +77,7 @@ def wrangle_zillow():
 def scale_data(train, 
                validate, 
                test, 
-               scale_cols=['bedrooms', 'bathrooms', 'tax_amount', 'sq_feet'],
+               columns_to_scale=['bedrooms', 'bathrooms', 'tax_amount', 'square_feet'],
                return_scaler=False):
     '''
     Scales the 3 data splits. 
@@ -92,13 +93,13 @@ def scale_data(train,
     # fit it to scaler
     mm_scaler.fit(train[columns_to_scale])
     # scaling train, validate, test, and columns
-    train_scaled[columns_to_scale] = pd.DataFrame(scaler.transform(train[columns_to_scale]),
+    train_scaled[columns_to_scale] = pd.DataFrame(mm_scaler.transform(train[columns_to_scale]),
                                                   columns=train[columns_to_scale].columns.values).set_index([train.index.values])
                                                   
-    validate_scaled[columns_to_scale] = pd.DataFrame(scaler.transform(validate[columns_to_scale]),
+    validate_scaled[columns_to_scale] = pd.DataFrame(mm_scaler.transform(validate[columns_to_scale]),
                                                   columns=validate[columns_to_scale].columns.values).set_index([validate.index.values])
     
-    test_scaled[columns_to_scale] = pd.DataFrame(scaler.transform(test[columns_to_scale]),
+    test_scaled[columns_to_scale] = pd.DataFrame(mm_scaler.transform(test[columns_to_scale]),
                                                  columns=test[columns_to_scale].columns.values).set_index([test.index.values])
     
     if return_scaler:
